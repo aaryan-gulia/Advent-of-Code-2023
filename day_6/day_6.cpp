@@ -13,7 +13,7 @@ using namespace std;
 unordered_map<string, vector<int>> getContainer(){
     unordered_map<string, vector<int>> tdContainer;
     fstream inputFile;
-    inputFile.open("/Users/aaryangulia/C++/Advent-of-Code-2023/day_6/day_6/input.txt", ios::in);
+    inputFile.open("input.txt", ios::in);
     if(inputFile.is_open()){
         string line;
         while(getline(inputFile, line)){
