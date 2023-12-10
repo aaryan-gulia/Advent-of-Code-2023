@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <numeric>
 
 using namespace std;
 
@@ -26,24 +27,33 @@ int Solution1(map<string, vector<string>> nodeMap, string directions){
     return numSteps;
 }
 
-int Solution2(map<string, vector<string>> nodeMap, string directions){
-    
-    vector<string> aKeys;
-    vector<string> zKeys;
-    
-    for_each(nodeMap, nodeMap, [&](auto a){if(*(a.first.end-1) == 'A') aKeys.push_back(a.first);});
-    for_each(nodeMap, nodeMap, [&](auto a){if(*(a.first.end-1) == 'Z') zKeys.push_back(a.first);});
-    
-    int numSteps = 0;
-    int direction = 0;
-    string currNode = "AAA";
+long long subSolution1(map<string, vector<string>> nodeMap, string directions, string currNode){
+    long long numSteps = 0;
+    long long direction = 0;
     while(true){
-        int directionChoice = (directions[direction++] == 'L') ? 0 : 1;
+        long long directionChoice = (directions[direction++] == 'L') ? 0 : 1;
         currNode = nodeMap[currNode][directionChoice];
         numSteps++;
-        if (currNode == "ZZZ") break;
+        if (*(--(currNode.end())) == 'Z') break;
         if (direction == directions.size()) direction = 0;
     }
+    
+    return numSteps;
+}
+
+long long Solution2(map<string, vector<string>> nodeMap, string directions){
+    
+    vector<string> aKeys;
+    
+    for_each(nodeMap.begin(), nodeMap.end(), [&](auto a){if(*(--(a.first.end())) == 'A') aKeys.push_back(a.first);});
+    
+    vector<long long> stepsVec;
+    
+    for(string node : aKeys){
+        stepsVec.push_back(subSolution1(nodeMap, directions, node));
+    }
+    
+    long long numSteps = accumulate(stepsVec.begin(), stepsVec.end(),(long long) 1,[](long long a, long long b){return abs(a * b) / gcd(a, b);});
     
     return numSteps;
 }
@@ -54,7 +64,7 @@ int main() {
     map<string, vector<string>> nodeMap;
     string directions;
     fstream inputFile;
-    inputFile.open("/Users/aaryangulia/C++/Advent-of-Code-2023/day_8/day_8/input.txt", ios::in);
+    inputFile.open("input.txt", ios::in);
     if(inputFile.is_open()){
         string line;
         while(getline(inputFile, line)){
@@ -76,5 +86,4 @@ int main() {
     cout << "Solution to the 1st question is: "<<Solution1(nodeMap, directions)<<endl;
     cout << "Solution to the 2nd question is: "<<Solution2(nodeMap, directions)<<endl;
     
-    for_each(nodeMap.begin(), nodeMap.end(), [](auto a){cout<<a.first<<" : "<<a.second[0]<<", "<<a.second[1]<<endl;});
 }
